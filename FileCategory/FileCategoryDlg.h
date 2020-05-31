@@ -5,7 +5,11 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
+#include <string.h>
 #include "CWMPPlayer40.h"
+#include <vector>
+#include "afxdtctl.h"
+using namespace std;
 
 // CFileCategoryDlg 对话框
 class CFileCategoryDlg : public CDialogEx
@@ -22,12 +26,23 @@ public:
 
 private:
 	CString m_decDriver;
+	vector<CString> vecFileSource;//将源文件路径保存到vecFileSource对象中
+	vector<CString> vecFileDest;  //将目的路径保存到vecFileDest对象中
 
-private:
+public:
 	CString CheckMobileDisk();
 	void InitMobileDisk();
 	void InitUploader();
 	void InitRecorder();
+	void InitListCtrl();
+	void UpdateListCtrl();
+	void UpdateTreeCtrl();
+	vector<CString> GenDestPath();
+	void InitDestPath(CString FileName);
+	void EditDestPath(int n);
+	void MP4Info(int n);
+	void CreateDirectory(CString destination);
+
 
 // 实现
 protected:
@@ -41,8 +56,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CComboBox cbMobileDisk;
-	CString sPlace;
-	CTreeCtrl treePath;
+//	CString sPlace;
 	CWMPPlayer40 wnpPlayer;
 	afx_msg void OnBnClickedButtonMove();
 	afx_msg void OnCbnSelchangeComboUploader();
@@ -51,8 +65,18 @@ public:
 
 
 	DECLARE_EVENTSINK_MAP()
-	void OnClickOcx1(short nButton, short nShiftState, long fX, long fY);
+//	void OnClickOcx(short nButton, short nShiftState, long fX, long fY);
 	CComboBox cbRecorder;
 	CComboBox cbUploader;
 	afx_msg void OnBnClickedButtonSource();
+	CListCtrl listCtrl;
+	CDateTimeCtrl dtTime;
+	afx_msg void OnDtnDatetimechangeDatetimepicker(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnClickedButtonDel();
+//	afx_msg void OnItemclickList(NMHDR *pNMHDR, LRESULT *pResult);
+	CEdit edPlace;
+//	afx_msg void OnColumnclickList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnClickList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonEdit();
+	CProgressCtrl progressCtrl;
 };

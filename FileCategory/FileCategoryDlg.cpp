@@ -6,6 +6,11 @@
 #include "FileCategory.h"
 #include "FileCategoryDlg.h"
 #include "afxdialogex.h"
+#include "shlwapi.h"
+
+#pragma comment(lib, "shlwapi.lib")
+
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -50,7 +55,7 @@ END_MESSAGE_MAP()
 
 CFileCategoryDlg::CFileCategoryDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CFileCategoryDlg::IDD, pParent)
-	, sPlace(_T(""))
+	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -59,11 +64,14 @@ void CFileCategoryDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_MOBILEDISK, cbMobileDisk);
-	DDX_Text(pDX, IDC_EDIT_PLACE, sPlace);
-	DDX_Control(pDX, IDC_TREE1, treePath);
-	DDX_Control(pDX, IDC_OCX1, wnpPlayer);
+	//  DDX_Text(pDX, IDC_EDIT_PLACE, sPlace);
+	DDX_Control(pDX, IDC_OCX, wnpPlayer);
 	DDX_Control(pDX, IDC_COMBO_RECORDE, cbRecorder);
 	DDX_Control(pDX, IDC_COMBO_UPLOADER, cbUploader);
+	DDX_Control(pDX, IDC_LIST, listCtrl);
+	DDX_Control(pDX, IDC_DATETIMEPICKER, dtTime);
+	DDX_Control(pDX, IDC_EDIT_PLACE, edPlace);
+	DDX_Control(pDX, IDC_PROGRESS, progressCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
@@ -75,8 +83,17 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_PLACE, &CFileCategoryDlg::OnChangeEditPlace)
 	ON_CBN_SELCHANGE(IDC_COMBO_RECORDE, &CFileCategoryDlg::OnSelchangeComboRecorde)
 	ON_BN_CLICKED(IDC_BUTTON_SOURCE, &CFileCategoryDlg::OnBnClickedButtonSource)
+	ON_NOTIFY(DTN_DATETIMECHANGE, IDC_DATETIMEPICKER, &CFileCategoryDlg::OnDtnDatetimechangeDatetimepicker)
+	ON_BN_CLICKED(IDC_BUTTON_DEL, &CFileCategoryDlg::OnClickedButtonDel)
+//	ON_NOTIFY(HDN_ITEMCLICK, 0, &CFileCategoryDlg::OnItemclickList)
+//	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST, &CFileCategoryDlg::OnColumnclickList)
+ON_NOTIFY(NM_CLICK, IDC_LIST, &CFileCategoryDlg::OnClickList)
+ON_BN_CLICKED(IDC_BUTTON_EDIT, &CFileCategoryDlg::OnBnClickedButtonEdit)
 END_MESSAGE_MAP()
 
+BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
+//	ON_EVENT(CFileCategoryDlg, IDC_OCX, 6505, CFileCategoryDlg::OnClickOcx, VTS_I2 VTS_I2 VTS_I4 VTS_I4)
+END_EVENTSINK_MAP()
 
 // CFileCategoryDlg 消息处理程序
 
@@ -111,9 +128,11 @@ BOOL CFileCategoryDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 	//m_decDriver = CheckMobileDisk();
+	edPlace.SetWindowText(_T("请填写名称"));
 	InitMobileDisk();
 	InitUploader();
 	InitRecorder();
+	InitListCtrl();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -196,7 +215,7 @@ CString CFileCategoryDlg::CheckMobileDisk()
 
 void CFileCategoryDlg::InitMobileDisk()
 {
-	CString sDisk[5] = { "E:\\", "F:\\", "G:\\", "H:\\", "I:\\"};
+	CString sDisk[5] = { _T("E:\\"), _T("F:\\"), _T("G:\\"), _T("H:\\"), _T("I:\\") };
 	for (int i = 0; i < 5; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
@@ -207,7 +226,7 @@ void CFileCategoryDlg::InitMobileDisk()
 
 void CFileCategoryDlg::InitUploader()
 {
-	CString sUploader[5] = { "陈老师", "杨老师", "张老师", "朱老师", "江老师" };
+	CString sUploader[5] = { _T("陈老师"), _T("杨老师"), _T("张老师"), _T("朱老师"), _T("江老师") };
 	for (int i = 0; i < 5; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
@@ -218,7 +237,7 @@ void CFileCategoryDlg::InitUploader()
 
 void CFileCategoryDlg::InitRecorder()
 {
-	CString sRecorder[5] = { "陈sir", "杨sir", "张sir", "朱sir", "江sir" };
+	CString sRecorder[5] = { _T("陈sir"), _T("杨sir"), _T("张sir"), _T("朱sir"), _T("江sir") };
 	for (int i = 0; i < 5; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
@@ -227,11 +246,69 @@ void CFileCategoryDlg::InitRecorder()
 	cbRecorder.SetCurSel(0);
 }
 
+void CFileCategoryDlg::InitListCtrl()
+{
 
+	listCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES); // 整行选择、网格线
+	listCtrl.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 40);   // 表头
+	listCtrl.InsertColumn(1, _T("所选文件"), LVCFMT_LEFT, 400);
+
+}
+
+void CFileCategoryDlg::UpdateListCtrl()
+{
+	listCtrl.DeleteAllItems();
+	int size = vecFileSource.size();
+	for (int i = 0; i < size; i++)
+	{   //的数据
+		CString a;
+		a.Format(_T("%d"), i + 1);
+		listCtrl.InsertItem(i, a);  // 表格内容
+		listCtrl.SetItemText(i, 1, vecFileSource.at(i));
+	}
+	listCtrl.SetSelectionMark(0);
+}
+
+void CFileCategoryDlg::CreateDirectory(CString destination)
+
+{
+	CString dir, tmp;
+	dir.Empty();
+	while (destination.Find('\\') > 0)
+	{
+		dir.Append(destination.Left(destination.Find('\\') + 1));//从路径中截取文件名;
+		if (!PathIsDirectory(dir))
+		{
+			::CreateDirectory(dir, NULL);//创建目录,已有的话不影响
+		}
+		tmp = destination;
+		destination = tmp.Right(tmp.GetLength() - tmp.Find('\\') - 1);
+	}
+
+
+}
 
 void CFileCategoryDlg::OnBnClickedButtonMove()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	int size = vecFileSource.size();
+	CString src, dest, filename;
+	progressCtrl.SetRange(0, size);
+	progressCtrl.SetStep(1);
+	progressCtrl.SetPos(0);
+	progressCtrl.ShowWindow(true);
+	for (int i = 0; i < size; i++)
+	{
+		src = vecFileSource.at(i);
+		dest = vecFileDest.at(i);
+		filename = src.Right(src.GetLength() - src.ReverseFind('\\') - 1);
+		CreateDirectory(dest);
+		progressCtrl.SetPos(i+1);
+		progressCtrl.SetWindowTextA("正在拷贝 "+ filename);
+		CopyFile((LPCSTR)src, (LPCSTR)dest, true);
+	}
+	AfxMessageBox(_T("视频分类完成"));
+	progressCtrl.ShowWindow(false);
 
 }
 
@@ -258,48 +335,186 @@ void CFileCategoryDlg::OnSelchangeComboRecorde()
 {
 	// TODO:  在此添加控件通知处理程序代码
 }
-BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
-	ON_EVENT(CFileCategoryDlg, IDC_OCX1, 6505, CFileCategoryDlg::OnClickOcx1, VTS_I2 VTS_I2 VTS_I4 VTS_I4)
-END_EVENTSINK_MAP()
-
-
-void CFileCategoryDlg::OnClickOcx1(short nButton, short nShiftState, long fX, long fY)
-{
-	// TODO:  在此处添加消息处理程序代码
-	wnpPlayer.put_URL("F:\\FILM\\爱剪辑-合力战疫.mp4");
-}
 
 
 void CFileCategoryDlg::OnBnClickedButtonSource()
 {
 	// TODO:  在此添加控件通知处理程序代码
-	CFileDialog fDlgGetTxt(TRUE);//打开文件对话框
-	//只显示txt文件格式：显示内容\0 过滤条件\0 ... 最后以\0结尾
-	fDlgGetTxt.m_ofn.lpstrFilter = "所有文件(*.*)\0 * .mp4; *.jpg\0"
-		"MP4(*.mp4)\0*.mp4\0"
-		"JPEG(*.jpg,*.jpeg)\0*.jpg;*.jpeg\0";
-	fDlgGetTxt.m_ofn.lpstrTitle = "打开txt文件";
-	fDlgGetTxt.m_ofn.Flags |= OFN_ALLOWMULTISELECT;//允许选择多个文件
+	CFileDialog dlg(TRUE, _T("*.mp4"), NULL, OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST, _T("视频文件(*.mp4;*.avi)|*.mp4|All Files (*.*)|*.*||"), NULL);
+	dlg.m_ofn.lpstrTitle = _T("选择视频文件");
+	CString filename;
 
-	fDlgGetTxt.m_ofn.nMaxFile = 20 * 101;//最多可以打开20个文件，每个文件名的字符数<=100
-
-	//设定一个文件名缓存，因为CFileDialog内置的文件名缓存长度只有200，但是很多时候，
-	//文件的路径远大于这个数，为了保险起见，所以要自己设定一个文件名缓存
-
-	char fileNameBuffer[20 * 101] = { 0 };//初始化为零，否则会发生意外错误
-	fDlgGetTxt.m_ofn.lpstrFile = fileNameBuffer;//设定一个文件名缓存
-
-	CStringArray strArrFilePaths;//将文件路径保存到CStringArray对象中
-
-	if (fDlgGetTxt.DoModal() == IDOK)
+	if (dlg.DoModal() == IDOK)
 	{
-		POSITION pos = fDlgGetTxt.GetStartPosition();//获取第一个文件名的位置
-
-		while (pos != NULL) //GetNextPathName()返回当前pos的文件名，并将下一个文件名的位置保存到pos中
-			strArrFilePaths.Add(fDlgGetTxt.GetNextPathName(pos));
+		POSITION fileNamesPosition = dlg.GetStartPosition();
+		while (fileNamesPosition != NULL)
+		{
+			filename = dlg.GetNextPathName(fileNamesPosition);
+			vecFileSource.push_back(filename);
+			InitDestPath(filename);   // 和源目录大小一致
+		}
 	}
-	//————————————————
-	//	版权声明：本文为CSDN博主「风从北边来」的原创文章，遵循CC 4.0 BY - SA版权协议，转载请附上原文出处链接及本声明。
-	//原文链接：https ://blog.csdn.net/qq_25244495/article/details/78405175
+
+	UpdateListCtrl();
+	/*————————————————
+		版权声明：本文为CSDN博主「碧海凌云」的原创文章，遵循CC 4.0 BY - SA版权协议，转载请附上原文出处链接及本声明。
+	原文链接：https ://blog.csdn.net/u012260238/article/details/56489318
+	*/
+
 }
 
+vector<CString> CFileCategoryDlg::GenDestPath()
+{
+	vector<CString> vecPath;
+	CString sHD, sUp, sDt, sPl, sRc;
+	int i = cbMobileDisk.GetCurSel();//获取索引，0-N
+	cbMobileDisk.GetLBText(i, sHD);
+
+	i = cbUploader.GetCurSel();//获取索引，0-N
+	cbUploader.GetLBText(i, sUp);
+
+	CTime timeDest;
+	dtTime.GetTime(timeDest);
+	sDt = timeDest.Format("%Y%m%d");
+
+	edPlace.GetWindowText(sPl);
+
+	i = cbRecorder.GetCurSel();//获取索引，0-N
+	cbRecorder.GetLBText(i, sRc);
+
+	vecPath.push_back(sHD);   // 五级目录
+	vecPath.push_back(sUp);
+	vecPath.push_back(sDt);
+	vecPath.push_back(sPl);
+	vecPath.push_back(sRc);
+
+	sHD.ReleaseBuffer();
+	sUp.ReleaseBuffer();
+	sDt.ReleaseBuffer();
+	sPl.ReleaseBuffer();
+	sRc.ReleaseBuffer();
+
+	return vecPath;
+}
+
+void CFileCategoryDlg::InitDestPath(CString FileName)
+{
+	vector<CString> tmp = GenDestPath();
+	CString sHD, sUp, sDt, sPl, sRc, sFile;
+	sHD = tmp.at(0);
+	sUp = tmp.at(1);
+	sDt = tmp.at(2);
+	sPl = tmp.at(3);
+	sRc = tmp.at(4);
+	sFile = FileName.Right(FileName.GetLength() - FileName.ReverseFind('\\') - 1);//从路径中截取文件名;
+
+	vecFileDest.push_back(sHD + sUp + "\\" + sDt + "\\" + sPl + "\\" + sRc + "\\" + sFile);
+
+	sHD.ReleaseBuffer();
+	sUp.ReleaseBuffer();
+	sDt.ReleaseBuffer();
+	sPl.ReleaseBuffer();
+	sRc.ReleaseBuffer();
+
+}
+
+void CFileCategoryDlg::EditDestPath(int nSel)
+{
+	vecFileDest.erase(vecFileDest.begin() + nSel);
+
+	vector<CString> tmp = GenDestPath();
+	CString FileName = listCtrl.GetItemText(nSel, 1);
+
+	CString sHD, sUp, sDt, sPl, sRc, sFile;
+	sHD = tmp.at(0);
+	sUp = tmp.at(1);
+	sDt = tmp.at(2);
+	sPl = tmp.at(3);
+	sRc = tmp.at(4);
+	sFile = FileName.Right(FileName.GetLength() - FileName.ReverseFind('\\') - 1);//从路径中截取文件名;
+
+	vecFileDest.insert(vecFileDest.begin() + nSel, sHD + sUp + "\\" + sDt + "\\" + sPl + "\\" + sRc + "\\" + sFile);
+	sHD.ReleaseBuffer();
+	sUp.ReleaseBuffer();
+	sDt.ReleaseBuffer();
+	sPl.ReleaseBuffer();
+	sRc.ReleaseBuffer();
+}
+
+void CFileCategoryDlg::MP4Info(int nSel)
+{
+	CString PathName, tmp;
+	PathName = vecFileDest.at(nSel);
+
+	vector<CString> sInfo;
+	while (PathName.Find('\\') > 0)
+	{
+		tmp = PathName.Left(PathName.Find('\\') + 0);//从路径中截取文件名;
+		sInfo.push_back(tmp);
+		tmp = PathName;
+		PathName = tmp.Right(tmp.GetLength() - tmp.Find('\\') - 1);
+	}
+
+	cbUploader.SelectString(0, sInfo.at(1));  // 上传人员；
+	edPlace.SetWindowTextA(sInfo.at(3));      // 场所
+	cbRecorder.SelectString(0, sInfo.at(4));  // 拍摄人员；
+
+	COleDateTime dt;
+	tmp = sInfo.at(2);
+//	dt.ParseDateTime("2020/05/01");    //将日期值存到dt中
+	dt.ParseDateTime(tmp.Left(4) + "/" + tmp.Mid(4, 2) + "/" + tmp.Right(2));    //将日期值存到dt中
+	SYSTEMTIME st;    //定义一个系统时间类型的变量
+	dt.GetAsSystemTime(st);    //将dt中的时间按系统时间格式化
+	CTime m_Date(st);
+	dtTime.SetTime(&m_Date);
+}
+
+
+void CFileCategoryDlg::OnDtnDatetimechangeDatetimepicker(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMDATETIMECHANGE pDTChange = reinterpret_cast<LPNMDATETIMECHANGE>(pNMHDR);
+	// TODO:  在此添加控件通知处理程序代码
+	*pResult = 0;
+}
+
+
+
+void CFileCategoryDlg::OnClickedButtonDel()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	int n = listCtrl.GetSelectionMark();
+	listCtrl.DeleteItem(n);
+	vecFileSource.erase(vecFileSource.begin() + n);
+	vecFileDest.erase(vecFileDest.begin() + n);
+	wnpPlayer.close();
+
+	UpdateListCtrl();
+
+}
+
+
+void CFileCategoryDlg::OnClickList(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	// TODO:  在此添加控件通知处理程序代码
+	int nSel = listCtrl.GetSelectionMark();
+	MP4Info(nSel);    // 显示视频信息。
+	wnpPlayer.put_URL(listCtrl.GetItemText(nSel, 1));
+
+	*pResult = 0;
+}
+
+
+void CFileCategoryDlg::OnBnClickedButtonEdit()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	POSITION pos = listCtrl.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		AfxMessageBox(_T("表格未选中"));
+		return;
+	}
+	int nSel = listCtrl.GetNextSelectedItem(pos);
+	EditDestPath(nSel);
+
+}
