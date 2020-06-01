@@ -6,6 +6,7 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 #include <string.h>
+#include "DLEdit.h"
 #include "CWMPPlayer40.h"
 #include <vector>
 #include "afxdtctl.h"
@@ -25,6 +26,11 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 private:
+	CToolBar m_Toolbar;
+	CBitmap m_bmpSettings, m_bmpRun, m_bmpExit;
+	CImageList m_Imagelist;
+
+private:
 	CString m_decDriver;
 	vector<CString> vecFileSource;//将源文件路径保存到vecFileSource对象中
 	vector<CString> vecFileDest;  //将目的路径保存到vecFileDest对象中
@@ -37,6 +43,7 @@ public:
 	void InitListCtrl();
 	void UpdateListCtrl();
 	void UpdateTreeCtrl();
+	void InitToolBar();
 	vector<CString> GenDestPath();
 	void InitDestPath(CString FileName);
 	void EditDestPath(int n);
@@ -53,6 +60,8 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+
+	afx_msg BOOL OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult);  // 工具条提示 
 	DECLARE_MESSAGE_MAP()
 public:
 	CComboBox cbMobileDisk;
@@ -74,9 +83,14 @@ public:
 	afx_msg void OnDtnDatetimechangeDatetimepicker(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnClickedButtonDel();
 //	afx_msg void OnItemclickList(NMHDR *pNMHDR, LRESULT *pResult);
-	CEdit edPlace;
+	CDLEdit edPlace;
 //	afx_msg void OnColumnclickList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnClickList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonEdit();
 	CProgressCtrl progressCtrl;
+	CButton m_btnDel;
+	CButton m_btnEdit;
+	afx_msg void OnIdrToolbarStart();
+	afx_msg void OnIdrToolbarStop();
+	afx_msg void OnIdrToolbarSettings();
 };

@@ -39,6 +39,9 @@
     <ClInclude Include="CWMPPlayer40.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DLEdit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileCategory.cpp">
@@ -51,6 +54,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CWMPPlayer40.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DLEdit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -66,6 +72,27 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\FileCategory.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\toolbar1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\toolbar2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\settings.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\toolbar3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\start.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\stop.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\logo.ico">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

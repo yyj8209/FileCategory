@@ -46,6 +46,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>执法视频分类</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -103,6 +104,7 @@
   <ItemGroup>
     <ClInclude Include="CWMPPlayer4.h" />
     <ClInclude Include="CWMPPlayer40.h" />
+    <ClInclude Include="DLEdit.h" />
     <ClInclude Include="FileCategory.h" />
     <ClInclude Include="FileCategoryDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -111,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CWMPPlayer40.cpp" />
+    <ClCompile Include="DLEdit.cpp" />
     <ClCompile Include="FileCategory.cpp" />
     <ClCompile Include="FileCategoryDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -126,6 +129,13 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\FileCategory.ico" />
+    <Image Include="res\logo.ico" />
+    <Image Include="res\settings.bmp" />
+    <Image Include="res\start.bmp" />
+    <Image Include="res\stop.bmp" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar2.bmp" />
+    <Image Include="res\toolbar3.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

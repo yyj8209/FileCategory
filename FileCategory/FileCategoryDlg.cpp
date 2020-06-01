@@ -33,6 +33,10 @@ public:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+//	afx_msg void OnIdrToolbarSettings();
+//	afx_msg void OnIdrToolbarStart();
+//	afx_msg void OnIdrToolbarStop();
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -46,6 +50,9 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 	ON_WM_INPUT_DEVICE_CHANGE()
+//	ON_COMMAND(IDR_TOOLBAR_SETTINGS, &CAboutDlg::OnIdrToolbarSettings)
+//	ON_COMMAND(IDR_TOOLBAR_START, &CAboutDlg::OnIdrToolbarStart)
+//	ON_COMMAND(IDR_TOOLBAR_STOP, &CAboutDlg::OnIdrToolbarStop)
 END_MESSAGE_MAP()
 
 
@@ -72,6 +79,8 @@ void CFileCategoryDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DATETIMEPICKER, dtTime);
 	DDX_Control(pDX, IDC_EDIT_PLACE, edPlace);
 	DDX_Control(pDX, IDC_PROGRESS, progressCtrl);
+	DDX_Control(pDX, IDC_BUTTON_DEL, m_btnDel);
+	DDX_Control(pDX, IDC_BUTTON_EDIT, m_btnEdit);
 }
 
 BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
@@ -85,10 +94,13 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SOURCE, &CFileCategoryDlg::OnBnClickedButtonSource)
 	ON_NOTIFY(DTN_DATETIMECHANGE, IDC_DATETIMEPICKER, &CFileCategoryDlg::OnDtnDatetimechangeDatetimepicker)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, &CFileCategoryDlg::OnClickedButtonDel)
-//	ON_NOTIFY(HDN_ITEMCLICK, 0, &CFileCategoryDlg::OnItemclickList)
-//	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST, &CFileCategoryDlg::OnColumnclickList)
-ON_NOTIFY(NM_CLICK, IDC_LIST, &CFileCategoryDlg::OnClickList)
-ON_BN_CLICKED(IDC_BUTTON_EDIT, &CFileCategoryDlg::OnBnClickedButtonEdit)
+	ON_NOTIFY(NM_CLICK, IDC_LIST, &CFileCategoryDlg::OnClickList)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT, &CFileCategoryDlg::OnBnClickedButtonEdit)
+
+	ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xffff, OnToolTipText)
+	ON_BN_CLICKED(IDR_TOOLBAR_START, &CFileCategoryDlg::OnIdrToolbarStart)
+	ON_BN_CLICKED(IDR_TOOLBAR_STOP, &CFileCategoryDlg::OnIdrToolbarStop)
+	ON_BN_CLICKED(IDR_TOOLBAR_SETTINGS, &CFileCategoryDlg::OnIdrToolbarSettings)
 END_MESSAGE_MAP()
 
 BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
@@ -126,6 +138,7 @@ BOOL CFileCategoryDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+
 	// TODO:  在此添加额外的初始化代码
 	//m_decDriver = CheckMobileDisk();
 	edPlace.SetWindowText(_T("请填写名称"));
@@ -133,7 +146,7 @@ BOOL CFileCategoryDlg::OnInitDialog()
 	InitUploader();
 	InitRecorder();
 	InitListCtrl();
-
+	InitToolBar();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -184,6 +197,57 @@ void CFileCategoryDlg::OnPaint()
 HCURSOR CFileCategoryDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+// 工具栏初始化
+void CFileCategoryDlg::InitToolBar(){
+	if (!m_Toolbar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_ALIGN_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS) ||
+		!m_Toolbar.LoadToolBar(IDR_TOOLBAR))
+	{
+		TRACE0("未能创建工具栏\n");
+		return;      // 未能创建  
+	}
+	m_Toolbar.ShowWindow(SW_SHOW);
+	//控件条定位  
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 20);
+
+	m_bmpSettings.LoadBitmapA(IDB_BITMAP_SETTINGS);
+	m_bmpRun.LoadBitmapA(IDB_BITMAP_START);
+	m_bmpExit.LoadBitmapA(IDB_BITMAP_STOP);
+	m_Imagelist.Create(32, 32, ILC_COLOR32 | ILC_MASK, 0, 0);
+	m_Imagelist.Add(&m_bmpSettings, RGB(0,0,0));
+	m_Imagelist.Add(&m_bmpRun, RGB(0, 0, 0));
+	m_Imagelist.Add(&m_bmpExit, RGB(0, 0, 0));
+	m_Toolbar.GetToolBarCtrl().SetImageList(&m_Imagelist);
+}
+
+// 工具栏提示
+BOOL CFileCategoryDlg::OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult)
+{
+	TOOLTIPTEXT   *pTTT = (TOOLTIPTEXT*)pNMHDR;
+	UINT  uID = pNMHDR->idFrom;     // 相当于原WM_COMMAND传递方式的wParam（low-order）, 在wParam中放的则是控件的ID。  
+
+	if (pTTT->uFlags  &  TTF_IDISHWND)
+		uID = ::GetDlgCtrlID((HWND)uID);
+	if (uID == NULL)
+		return   FALSE;
+	switch (uID)
+	{
+	case IDB_BITMAP_STOP:
+		pTTT->lpszText = _T("退出程序");
+		break;
+
+	case IDB_BITMAP_START:
+		pTTT->lpszText = _T("执行视频分类");
+		break;
+
+	case IDR_TOOLBAR_SETTINGS:
+		pTTT->lpszText = _T("设置");
+		break;
+
+	}
+
+	return TRUE;
 }
 
 CString CFileCategoryDlg::CheckMobileDisk()
@@ -292,6 +356,15 @@ void CFileCategoryDlg::OnBnClickedButtonMove()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	int size = vecFileSource.size();
+	if (size < 1)
+	{
+		MessageBox(_T("请选择文件并编辑信息，再执行分类。"), _T("未选中任何视频"), MB_OK);
+		return;
+
+	}
+	if (MessageBox(_T("即将执行视频分类，可能需要几分钟。"), _T("是否执行视频分类？"), MB_OKCANCEL|MB_ICONQUESTION) == IDCANCEL)
+		return;
+
 	CString src, dest, filename;
 	progressCtrl.SetRange(0, size);
 	progressCtrl.SetStep(1);
@@ -483,6 +556,9 @@ void CFileCategoryDlg::OnClickedButtonDel()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	int n = listCtrl.GetSelectionMark();
+	if (MessageBox(_T("本次操作将放弃导入 " + vecFileSource.at(n)), _T("提示"), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
+		return;
+
 	listCtrl.DeleteItem(n);
 	vecFileSource.erase(vecFileSource.begin() + n);
 	vecFileDest.erase(vecFileDest.begin() + n);
@@ -501,6 +577,9 @@ void CFileCategoryDlg::OnClickList(NMHDR *pNMHDR, LRESULT *pResult)
 	MP4Info(nSel);    // 显示视频信息。
 	wnpPlayer.put_URL(listCtrl.GetItemText(nSel, 1));
 
+	m_btnDel.EnableWindow(true);
+	m_btnEdit.EnableWindow(true);
+
 	*pResult = 0;
 }
 
@@ -517,4 +596,25 @@ void CFileCategoryDlg::OnBnClickedButtonEdit()
 	int nSel = listCtrl.GetNextSelectedItem(pos);
 	EditDestPath(nSel);
 
+}
+
+
+void CFileCategoryDlg::OnIdrToolbarStart()
+{
+	// TODO:  在此添加命令处理程序代码
+	OnBnClickedButtonMove();
+}
+
+
+void CFileCategoryDlg::OnIdrToolbarStop()
+{
+	// TODO:  在此添加命令处理程序代码
+	OnOK();
+}
+
+
+void CFileCategoryDlg::OnIdrToolbarSettings()
+{
+	// TODO:  在此添加命令处理程序代码
+	AfxMessageBox("功能完善中……");
 }
