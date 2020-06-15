@@ -98,9 +98,9 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT, &CFileCategoryDlg::OnBnClickedButtonEdit)
 
 	ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xffff, OnToolTipText)
-	ON_BN_CLICKED(IDR_TOOLBAR_START, &CFileCategoryDlg::OnIdrToolbarStart)
-	ON_BN_CLICKED(IDR_TOOLBAR_STOP, &CFileCategoryDlg::OnIdrToolbarStop)
-	ON_BN_CLICKED(IDR_TOOLBAR_SETTINGS, &CFileCategoryDlg::OnIdrToolbarSettings)
+	ON_BN_CLICKED(ID_TOOLBAR_RUN, &CFileCategoryDlg::OnIdrToolbarStart)
+	ON_BN_CLICKED(ID_TOOLBAR_EXIT, &CFileCategoryDlg::OnIdrToolbarStop)
+	ON_BN_CLICKED(ID_TOOLBAR_SETTINGS, &CFileCategoryDlg::OnIdrToolbarSettings)
 END_MESSAGE_MAP()
 
 BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
@@ -279,8 +279,8 @@ CString CFileCategoryDlg::CheckMobileDisk()
 
 void CFileCategoryDlg::InitMobileDisk()
 {
-	CString sDisk[5] = { _T("E:\\"), _T("F:\\"), _T("G:\\"), _T("H:\\"), _T("I:\\") };
-	for (int i = 0; i < 5; i++)
+	CString sDisk[6] = { _T("H:\\"), _T("I:\\"), _T("J:\\"),  _T("E:\\"), _T("F:\\"), _T("G:\\")};
+	for (int i = 0; i < 6; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
 		cbMobileDisk.InsertString(i, sDisk[i]);
@@ -290,7 +290,7 @@ void CFileCategoryDlg::InitMobileDisk()
 
 void CFileCategoryDlg::InitUploader()
 {
-	CString sUploader[5] = { _T("陈老师"), _T("杨老师"), _T("张老师"), _T("朱老师"), _T("江老师") };
+	CString sUploader[5] = { _T("张立广"), _T("吕长敏"), _T("杨允军"), _T("朱正胜"), _T("苍老师") };
 	for (int i = 0; i < 5; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
@@ -301,7 +301,7 @@ void CFileCategoryDlg::InitUploader()
 
 void CFileCategoryDlg::InitRecorder()
 {
-	CString sRecorder[5] = { _T("陈sir"), _T("杨sir"), _T("张sir"), _T("朱sir"), _T("江sir") };
+	CString sRecorder[5] = { _T("张立广"), _T("吕长敏"), _T("杨允军"), _T("朱正胜"), _T("苍老师") };
 	for (int i = 0; i < 5; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
@@ -413,8 +413,17 @@ void CFileCategoryDlg::OnSelchangeComboRecorde()
 void CFileCategoryDlg::OnBnClickedButtonSource()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	TCHAR        szLargeBuf[4096]; // 定义一个临时缓冲区
+	memset(szLargeBuf, '\0', 4096);
 	CFileDialog dlg(TRUE, _T("*.mp4"), NULL, OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST, _T("视频文件(*.mp4;*.avi)|*.mp4|All Files (*.*)|*.*||"), NULL);
-	dlg.m_ofn.lpstrTitle = _T("选择视频文件");
+	dlg.m_ofn.lpstrFile = szLargeBuf;
+
+#ifdef UNICODE
+	dlg.m_ofn.nMaxFile = 4096;
+#else
+	dlg.m_ofn.nMaxFile = sizeof (szLargeBuf);
+#endif
+
 	CString filename;
 
 	if (dlg.DoModal() == IDOK)
@@ -556,6 +565,11 @@ void CFileCategoryDlg::OnClickedButtonDel()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	int n = listCtrl.GetSelectionMark();
+	if (vecFileSource.size() < 1)
+	{
+		MessageBox(_T("文件列表为空，请导入文件。"));
+		return;
+	}
 	if (MessageBox(_T("本次操作将放弃导入 " + vecFileSource.at(n)), _T("提示"), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
 		return;
 
