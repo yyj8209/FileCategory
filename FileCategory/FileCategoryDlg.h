@@ -29,14 +29,17 @@ private:
 	CToolBar m_Toolbar;
 	CBitmap m_bmpSettings, m_bmpRun, m_bmpExit;
 	CImageList m_Imagelist;
+	int nEditSel;     // 选中的表格序
 
 private:
 	CString m_decDriver;
 	vector<CString> vecFileSource;//将源文件路径保存到vecFileSource对象中
 	vector<CString> vecFileDest;  //将目的路径保存到vecFileDest对象中
+	vector<CString> DiskName;
+
 
 public:
-	CString CheckMobileDisk();
+	void CheckMobileDisk();
 	void InitMobileDisk();
 	void InitUploader();
 	void InitRecorder();
@@ -60,7 +63,7 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-
+	afx_msg BOOL   OnDeviceChange(UINT   nEventType, DWORD   dwData);
 	afx_msg BOOL OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult);  // 工具条提示 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -93,4 +96,5 @@ public:
 	afx_msg void OnIdrToolbarStart();
 	afx_msg void OnIdrToolbarStop();
 	afx_msg void OnIdrToolbarSettings();
+//	afx_msg void OnCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult);
 };

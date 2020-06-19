@@ -7,7 +7,9 @@
 #include "FileCategoryDlg.h"
 #include "afxdialogex.h"
 #include "shlwapi.h"
+#include <algorithm>
 
+using namespace std;
 #pragma comment(lib, "shlwapi.lib")
 
 
@@ -65,6 +67,7 @@ CFileCategoryDlg::CFileCategoryDlg(CWnd* pParent /*=NULL*/)
 	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	nEditSel = 0;
 }
 
 void CFileCategoryDlg::DoDataExchange(CDataExchange* pDX)
@@ -87,6 +90,7 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_DEVICECHANGE()// U盘插入与拔出
 	ON_BN_CLICKED(IDC_BUTTON_MOVE, &CFileCategoryDlg::OnBnClickedButtonMove)
 	ON_CBN_SELCHANGE(IDC_COMBO_UPLOADER, &CFileCategoryDlg::OnCbnSelchangeComboUploader)
 	ON_EN_CHANGE(IDC_EDIT_PLACE, &CFileCategoryDlg::OnChangeEditPlace)
@@ -101,6 +105,7 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_BN_CLICKED(ID_TOOLBAR_RUN, &CFileCategoryDlg::OnIdrToolbarStart)
 	ON_BN_CLICKED(ID_TOOLBAR_EXIT, &CFileCategoryDlg::OnIdrToolbarStop)
 	ON_BN_CLICKED(ID_TOOLBAR_SETTINGS, &CFileCategoryDlg::OnIdrToolbarSettings)
+//	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST, &CFileCategoryDlg::OnCustomdrawList)
 END_MESSAGE_MAP()
 
 BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
@@ -141,7 +146,8 @@ BOOL CFileCategoryDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 	//m_decDriver = CheckMobileDisk();
-	edPlace.SetWindowText(_T("请填写名称"));
+	//CheckMobileDisk();
+	edPlace.SetWindowText(_T("检查场所名称"));
 	InitMobileDisk();
 	InitUploader();
 	InitRecorder();
@@ -250,14 +256,15 @@ BOOL CFileCategoryDlg::OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult)
 	return TRUE;
 }
 
-CString CFileCategoryDlg::CheckMobileDisk()
+void CFileCategoryDlg::CheckMobileDisk()
 {
-	int DSLength = GetLogicalDriveStrings(0, NULL);
+	int DSLength = 64;  // GetLogicalDriveStrings(0, NULL);
 	//通过GetLogicalDriveStrings()函数获取所有驱动器字符串信息长度。
 	char* DStr = new char[DSLength];//用获取的长度在堆区创建一个c风格的字符串数组
-	GetLogicalDriveStrings(DSLength, (LPTSTR)DStr);
+	::GetLogicalDriveStrings(DSLength, (LPTSTR)DStr);
 	//通过GetLogicalDriveStrings将字符串信息复制到堆区数组中,其中保存了所有驱动器的信息。
 	CString a;
+	BOOL bFirst = true;
 	int DType;
 	int si = 0;
 	for (int i = 0; i < DSLength / 4; ++i)
@@ -266,21 +273,45 @@ CString CFileCategoryDlg::CheckMobileDisk()
 		char dir[3] = { DStr[si], ':', '\\' };
 		DType = GetDriveType((LPTSTR)DStr + i * 4);
 		//GetDriveType函数，可以获取驱动器类型，参数为驱动器的根目录
-		if (DType == DRIVE_REMOVABLE)
-		{
-			a = dir;  //  = dir[0];
-			return a;
-		}
-		cbMobileDisk.InsertString(i,a);
+		//if (DType == DRIVE_REMOVABLE)
+		//{
+			CString a(dir[0]);
+			a = a + ':' + '\\';
+			DiskName.push_back(a);
+			//if (bFirst)
+			//{
+			//	DiskName.push_back(a);
+			//	bFirst = false;
+			//}
+			for (int j = 0; j < DiskName.size(); j++)
+			{
+				if (!a.Compare(DiskName.at(j)))
+				{
+					continue;
+				}
+			}
+		//}
 		si += 4;
 	}
-	return _T("未发现移动硬盘");
+	sort(DiskName.begin(), DiskName.end());
+	DiskName.erase(unique(DiskName.begin(), DiskName.end()), DiskName.end());//使用 erase 删除
+	for (int i = 0; i < DiskName.size(); i++)
+		cbMobileDisk.InsertString(i, DiskName.at(i));
+	cbMobileDisk.SetCurSel(0);
+//	return _T("未发现移动硬盘");
+}
+
+BOOL  CFileCategoryDlg::OnDeviceChange(UINT   nEventType, DWORD   dwData)
+{
+
+	//CheckMobileDisk();
+	return true;
 }
 
 void CFileCategoryDlg::InitMobileDisk()
 {
-	CString sDisk[6] = { _T("H:\\"), _T("I:\\"), _T("J:\\"),  _T("E:\\"), _T("F:\\"), _T("G:\\")};
-	for (int i = 0; i < 6; i++)
+	CString sDisk[8] = { _T("D:\\"), _T("E:\\"), _T("F:\\"), _T("G:\\"), _T("H:\\"), _T("I:\\"), _T("J:\\"), _T("K:\\") };
+	for (int i = 0; i < 8; i++)
 		//为了显示每个驱动器的状态，则通过循环输出实现，由于DStr内部保存的数据是A:\NULLB:\NULLC:\NULL，这样的信息，所以DSLength/4可以获得具体大循环范围
 	{
 		cbMobileDisk.InsertString(i, sDisk[i]);
@@ -314,8 +345,8 @@ void CFileCategoryDlg::InitListCtrl()
 {
 
 	listCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES); // 整行选择、网格线
-	listCtrl.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 40);   // 表头
-	listCtrl.InsertColumn(1, _T("所选文件"), LVCFMT_LEFT, 400);
+	listCtrl.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 50);   // 表头
+	listCtrl.InsertColumn(1, _T("视频文件"), LVCFMT_LEFT, 400);
 
 }
 
@@ -588,7 +619,9 @@ void CFileCategoryDlg::OnClickList(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO:  在此添加控件通知处理程序代码
 	int nSel = listCtrl.GetSelectionMark();
-	MP4Info(nSel);    // 显示视频信息。
+	CString strFisrtEdit = listCtrl.GetItemText(nSel, 0);
+	if (strFisrtEdit.Find(_T("完成")) != -1)
+		MP4Info(nSel);    // 显示视频信息。
 	wnpPlayer.put_URL(listCtrl.GetItemText(nSel, 1));
 
 	m_btnDel.EnableWindow(true);
@@ -609,7 +642,11 @@ void CFileCategoryDlg::OnBnClickedButtonEdit()
 	}
 	int nSel = listCtrl.GetNextSelectedItem(pos);
 	EditDestPath(nSel);
+	CString a;
+	a.Format("%d", nSel+1);
 
+	listCtrl.SetItemText(nSel, 0, a+_T("完成"));
+	//listCtrl.UpdateData(false);
 }
 
 
@@ -632,3 +669,4 @@ void CFileCategoryDlg::OnIdrToolbarSettings()
 	// TODO:  在此添加命令处理程序代码
 	AfxMessageBox("功能完善中……");
 }
+
