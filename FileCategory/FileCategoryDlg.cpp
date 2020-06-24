@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(CFileCategoryDlg, CDialogEx)
 	ON_BN_CLICKED(ID_TOOLBAR_EXIT, &CFileCategoryDlg::OnIdrToolbarStop)
 	ON_BN_CLICKED(ID_TOOLBAR_SETTINGS, &CFileCategoryDlg::OnIdrToolbarSettings)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST, &CFileCategoryDlg::OnCustomdrawList)
+ON_BN_CLICKED(IDOK, &CFileCategoryDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 BEGIN_EVENTSINK_MAP(CFileCategoryDlg, CDialogEx)
@@ -346,7 +347,8 @@ void CFileCategoryDlg::InitListCtrl()
 
 	listCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES); // 整行选择、网格线
 	listCtrl.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 50);   // 表头
-	listCtrl.InsertColumn(1, _T("视频文件"), LVCFMT_LEFT, 400);
+	listCtrl.InsertColumn(1, _T("原视频文件"), LVCFMT_LEFT, 450);
+	listCtrl.InsertColumn(2, _T("分类后的位置"), LVCFMT_LEFT, 450);
 
 }
 
@@ -531,7 +533,7 @@ void CFileCategoryDlg::InitDestPath(CString FileName)
 
 }
 
-void CFileCategoryDlg::EditDestPath(int nSel)
+CString CFileCategoryDlg::EditDestPath(int nSel)
 {
 	vecFileDest.erase(vecFileDest.begin() + nSel);
 
@@ -545,14 +547,20 @@ void CFileCategoryDlg::EditDestPath(int nSel)
 	sPl = tmp.at(3);
 	sRc = tmp.at(4);
 	sFile = FileName.Right(FileName.GetLength() - FileName.ReverseFind('\\') - 1);//从路径中截取文件名;
+	
 
 	vecFileDest.insert(vecFileDest.begin() + nSel, sHD + sUp + "\\" + sDt + "\\" + sPl + "\\" + sRc + "\\" + sFile);
+	FileName = sHD + sUp + "\\" + sDt + "\\" + sPl + "\\" + sRc + "\\" + sFile;
 	sHD.ReleaseBuffer();
 	sUp.ReleaseBuffer();
 	sDt.ReleaseBuffer();
 	sPl.ReleaseBuffer();
 	sRc.ReleaseBuffer();
+
+	return FileName;
+
 }
+
 
 void CFileCategoryDlg::MP4Info(int nSel)
 {
@@ -641,12 +649,12 @@ void CFileCategoryDlg::OnBnClickedButtonEdit()
 		return;
 	}
 	int nSel = listCtrl.GetNextSelectedItem(pos);
-	EditDestPath(nSel);
+	CString FileName = EditDestPath(nSel);
 	CString a;
 	a.Format("%d", nSel+1);
 
 	listCtrl.SetItemText(nSel, 0, a+_T("完成"));
-	//listCtrl.UpdateData(false);
+	listCtrl.SetItemText(nSel, 2, FileName);
 }
 
 
@@ -670,3 +678,13 @@ void CFileCategoryDlg::OnIdrToolbarSettings()
 	AfxMessageBox("功能完善中……");
 }
 
+
+
+void CFileCategoryDlg::OnBnClickedOk()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	if (MessageBox(_T("是否退出程序？"), _T("是否退出程序？"), MB_OKCANCEL | MB_ICONQUESTION) == IDCANCEL)
+		return;
+
+	CDialogEx::OnOK();
+}

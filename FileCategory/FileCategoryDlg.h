@@ -49,7 +49,7 @@ public:
 	void InitToolBar();
 	vector<CString> GenDestPath();
 	void InitDestPath(CString FileName);
-	void EditDestPath(int n);
+	CString EditDestPath(int n);
 	void MP4Info(int n);
 	void CreateDirectory(CString destination);
 
@@ -97,4 +97,5 @@ public:
 	afx_msg void OnIdrToolbarStop();
 	afx_msg void OnIdrToolbarSettings();
 //	afx_msg void OnCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedOk();
 };
