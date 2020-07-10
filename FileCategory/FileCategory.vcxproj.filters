@@ -42,6 +42,12 @@
     <ClInclude Include="DLEdit.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="BakupDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AddNameDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileCategory.cpp">
@@ -57,6 +63,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DLEdit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BakupDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AddNameDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,6 +105,15 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\logo.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\add.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\adder.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

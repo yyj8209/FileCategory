@@ -46,7 +46,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>执法视频分类</TargetName>
+    <TargetName>执法视频登记客户端</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,6 +102,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddNameDlg.h" />
+    <ClInclude Include="BakupDlg.h" />
     <ClInclude Include="CWMPPlayer4.h" />
     <ClInclude Include="CWMPPlayer40.h" />
     <ClInclude Include="DLEdit.h" />
@@ -112,6 +114,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AddNameDlg.cpp" />
+    <ClCompile Include="BakupDlg.cpp" />
     <ClCompile Include="CWMPPlayer40.cpp" />
     <ClCompile Include="DLEdit.cpp" />
     <ClCompile Include="FileCategory.cpp" />
@@ -128,6 +132,9 @@
     <None Include="res\FileCategory.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\add.bmp" />
+    <Image Include="res\adder.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\FileCategory.ico" />
     <Image Include="res\logo.ico" />
     <Image Include="res\settings.bmp" />

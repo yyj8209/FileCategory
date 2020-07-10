@@ -1,12 +1,21 @@
-﻿生成启动时间为 2020-6-19 17:38:08。
+﻿生成启动时间为 2020-7-9 9:19:16。
      1>项目“F:\vc\FileCategory\FileCategory\FileCategory.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\FileCategory.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt FileCategoryDlg.cpp
          FileCategoryDlg.cpp
-     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(287): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(299): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(306): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(318): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(470): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(480): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(658): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(913): warning C4018: “<”: 有符号/无符号不匹配
+     1>f:\vc\filecategory\filecategory\filecategorydlg.cpp(948): warning C4018: “<”: 有符号/无符号不匹配
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /D _AFXDLL /l"0x0804" /IDebug\ /nologo /fo"Debug\FileCategory.res" FileCategory.rc 
        Link:
          D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\vc\FileCategory\Debug\FileCategory.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"F:\vc\FileCategory\Debug\FileCategory.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\vc\FileCategory\Debug\FileCategory.lib" /MACHINE:X86 Debug\FileCategory.res
+         Debug\AddNameDlg.obj
+         Debug\BakupDlg.obj
          Debug\CWMPPlayer40.obj
          Debug\DLEdit.obj
          Debug\FileCategory.obj
@@ -17,4 +26,4 @@
 
 生成成功。
 
-已用时间 00:00:00.59
+已用时间 00:00:01.37

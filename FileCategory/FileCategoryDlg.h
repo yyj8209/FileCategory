@@ -27,7 +27,7 @@ public:
 
 private:
 	CToolBar m_Toolbar;
-	CBitmap m_bmpSettings, m_bmpRun, m_bmpExit;
+	CBitmap m_bmpSettings, m_bmpAdd, m_bmpRun, m_bmpExit;
 	CImageList m_Imagelist;
 	int nEditSel;     // 选中的表格序
 
@@ -47,13 +47,19 @@ public:
 	void UpdateListCtrl();
 	void UpdateTreeCtrl();
 	void InitToolBar();
+	void InitImageButton();
 	vector<CString> GenDestPath();
+	vector<CString> GenDelPath();
+	vector<CString> GenBackpath();
+	BOOL PathExist(vector<CString> vecPath, CString strPath);
 	void InitDestPath(CString FileName);
 	CString EditDestPath(int n);
 	void MP4Info(int n);
 	void CreateDirectory(CString destination);
-
-
+	void DeleteDirectory(CString strPath);
+	void WriteTxt(LPCTSTR lpszFileName, vector<CString> vecTxt);
+	vector<CString> GenVec4Txt(vector<CString> vecDest);
+	vector<CString> GetMediaDuration(CString path);
 // 实现
 protected:
 	HICON m_hIcon;
@@ -96,6 +102,12 @@ public:
 	afx_msg void OnIdrToolbarStart();
 	afx_msg void OnIdrToolbarStop();
 	afx_msg void OnIdrToolbarSettings();
-//	afx_msg void OnCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnIdrToolbarAdd();
+	//	afx_msg void OnCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedOk();
+	CButton m_btnAddLoader;
+	CButton m_btnAddRecorder;
+	afx_msg void OnBnClickedButtonAddLoader();
+	afx_msg void OnBnClickedButtonAddRecorder();
+	afx_msg void OnSelchangeComboMobiledisk();
 };

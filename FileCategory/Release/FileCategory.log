@@ -1,15 +1,21 @@
-﻿生成启动时间为 2020-6-19 15:24:24。
+﻿生成启动时间为 2020-7-9 9:20:16。
      1>项目“F:\vc\FileCategory\FileCategory\FileCategory.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _MBCS /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\执法视频分类.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt FileCategory.cpp FileCategoryDlg.cpp
-         FileCategory.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _MBCS /D _AFXDLL /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\执法视频登记客户端.pch" /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt FileCategoryDlg.cpp
          FileCategoryDlg.cpp
-     1>FileCategoryDlg.cpp(287): warning C4018: “<”: 有符号/无符号不匹配
-     1>FileCategoryDlg.cpp(299): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(306): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(318): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(470): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(480): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(658): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(913): warning C4018: “<”: 有符号/无符号不匹配
+     1>FileCategoryDlg.cpp(948): warning C4018: “<”: 有符号/无符号不匹配
        ResourceCompile:
          C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D NDEBUG /D _AFXDLL /l"0x0804" /IRelease\ /nologo /fo"Release\FileCategory.res" FileCategory.rc 
        Link:
-         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\vc\FileCategory\Release\执法视频分类.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"F:\vc\FileCategory\Release\执法视频分类.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\vc\FileCategory\Release\执法视频分类.lib" /MACHINE:X86 /SAFESEH Release\FileCategory.res
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\vc\FileCategory\Release\执法视频登记客户端.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"F:\vc\FileCategory\Release\执法视频登记客户端.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\vc\FileCategory\Release\执法视频登记客户端.lib" /MACHINE:X86 /SAFESEH Release\FileCategory.res
+         Release\AddNameDlg.obj
+         Release\BakupDlg.obj
          Release\CWMPPlayer40.obj
          Release\DLEdit.obj
          Release\FileCategory.obj
@@ -17,9 +23,9 @@
          Release\stdafx.obj
          正在生成代码
          已完成代码的生成
-         FileCategory.vcxproj -> F:\vc\FileCategory\Release\执法视频分类.exe
+         FileCategory.vcxproj -> F:\vc\FileCategory\Release\执法视频登记客户端.exe
      1>已完成生成项目“F:\vc\FileCategory\FileCategory\FileCategory.vcxproj”(Build 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:01.49
+已用时间 00:00:01.54
